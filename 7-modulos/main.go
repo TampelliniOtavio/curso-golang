@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	model "golangestudo/model"
+	"time"
 )
 
 func main() {
@@ -17,10 +18,12 @@ func main() {
     pessoa := model.Pessoa {
         Nome: "Nome Legal",
         Endereco: endereco,
+        DataDeNascimento: time.Date(2020, 11, 25, 0, 0, 0, 0, time.Local),
     }
 
     fmt.Println(pessoa)
-    fmt.Println(endereco)
-    endereco.Numero = 10
-    fmt.Println(endereco.Numero)
+    // idade := model.CalculaIdade(pessoa)
+    pessoa.IdadeAtual()
+
+    fmt.Println("Idade: ", pessoa.Idade)
 }
