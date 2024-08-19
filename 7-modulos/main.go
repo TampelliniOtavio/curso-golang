@@ -14,6 +14,12 @@ func main() {
         Cidade: "São Paulo",
     }
 
+    pessoa := model.Pessoa {
+        Nome: "Nome Legal",
+        Endereco: endereco,
+    }
+
+    fmt.Println(pessoa)
     fmt.Println(endereco)
     endereco.Numero = 10
     fmt.Println(endereco.Numero)
