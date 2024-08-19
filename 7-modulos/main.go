@@ -26,4 +26,18 @@ func main() {
     pessoa.IdadeAtual()
 
     fmt.Println("Idade: ", pessoa.Idade)
+
+    automovelMoto := model.Automovel {
+        Ano: 2022,
+        Placa: "XPS",
+        Modelo: "CG",
+    }
+
+    moto := model.Moto {
+        Automovel: automovelMoto,
+        Cilindradas: 125,
+    }
+
+    fmt.Println(moto)
+    fmt.Println(moto.Modelo)
 }
