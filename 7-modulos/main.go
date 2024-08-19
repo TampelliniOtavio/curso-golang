@@ -1,23 +1,20 @@
 package main
 
-import "fmt"
-
-type endereco struct {
-    rua string
-    numero int
-    cidade string
-}
+import (
+	"fmt"
+	model "golangestudo/model"
+)
 
 func main() {
     fmt.Println("iniciando...")
 
-    endereco := endereco {
-        rua: "Rua x",
-        numero: 1,
-        cidade: "São Paulo",
+    endereco := model.Endereco {
+        Rua: "Rua x",
+        Numero: 1,
+        Cidade: "São Paulo",
     }
 
     fmt.Println(endereco)
-    endereco.numero = 10
-    fmt.Println(endereco.numero)
+    endereco.Numero = 10
+    fmt.Println(endereco.Numero)
 }
