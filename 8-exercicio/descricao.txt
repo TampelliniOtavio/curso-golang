@@ -1,0 +1,7 @@
+- criar um modelo que irá receber os itens para compras do mês, nesse modelo teremos
+a data que a compra irá acontecer, mercado e os itens pra comprar
+
+- Dado o Exercício anterior, mover o modelo anterior criado para o pacote chamado "model"
+
+- Dado o Exercício anterior, criar uma função no pacote "model" que inicializa a struct
+e retorna o ponteiro
