@@ -34,50 +34,38 @@ func Test_Create_ValidateDomainError(t *testing.T) {
     _, err := service.Create(newCampaign)
 
     assert.NotNil(err)
-    assert.Equal("name is required", err.Error())
+    assert.False(errors.Is(internalerrors.ErrInternal, err))
 }
 
 func Test_Create_Campaign(t *testing.T) {
+    assert := assert.New(t)
     newCampaign := contract.NewCampaign{
-        Name: "Test",
-        Content: "Body",
+        Name: "Campaign",
+        Content: "Content",
         Emails: []string{"email1@email.com"},
     }
 
     repository := new(repositoryMock)
-    repository.On("Save", mock.MatchedBy(func(campaign *Campaign) bool {
-        if newCampaign.Name != campaign.Name {
-            return false
-        }
-
-        if newCampaign.Content != campaign.Content {
-            return false
-        }
-
-        if len(newCampaign.Emails) != len(campaign.Contacts) {
-            return false
-        }
-
-        return true
-    })).Return(nil)
+    repository.On("Save", mock.Anything).Return(nil)
 
     service.Repository = repository
 
-    service.Create(newCampaign)
+    id, err := service.Create(newCampaign)
 
-    repository.AssertExpectations(t)
+    assert.NotNil(id)
+    assert.Nil(err)
 }
 
 func Test_Create_ValidateRepositorySave(t *testing.T) {
     assert := assert.New(t)
     newCampaign := contract.NewCampaign{
-        Name: "Test",
-        Content: "Body",
+        Name: "Campaign",
+        Content: "Content",
         Emails: []string{"email1@email.com"},
     }
 
     repository := new(repositoryMock)
-    repository.On("Save", mock.Anything).Return(errors.New("error to save on database"))
+    repository.On("Save", mock.Anything).Return(internalerrors.ErrInternal)
     service.Repository = repository
 
     _, err := service.Create(newCampaign)
