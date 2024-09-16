@@ -1,16 +1,13 @@
 package main
 
 import (
-	"emailn/internal/contract"
 	"emailn/internal/domain/campaign"
 	"emailn/internal/domain/infrastructure/database"
-	internalerrors "emailn/internal/internal-errors"
-	"errors"
+	"emailn/internal/endpoints"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/render"
 )
 
 func main() {
@@ -21,35 +18,16 @@ func main() {
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
 
-    service := campaign.Service{
+    campaignSservice := campaign.Service{
         Repository: &database.CampaignRepository{},
     }
 
-    r.Post("/campaigns", func(w http.ResponseWriter, r *http.Request) {
-        var request contract.NewCampaign
-        err := render.DecodeJSON(r.Body, &request)
+    handler := endpoints.Handler{
+        CampaignService: campaignSservice,
+    }
 
-        if err != nil {
-            render.Status(r, 400)
-            render.JSON(w, r, map[string]string{"error": err.Error()})
-            return
-        }
-
-        id, err := service.Create(request)
-
-        if err != nil {
-            render.Status(r, 400)
-            if errors.Is(err, internalerrors.ErrInternal) {
-                render.Status(r, 500)
-            }
-
-            render.JSON(w, r, map[string]string{"error": err.Error()})
-            return
-        }
-
-        render.Status(r, 201)
-        render.JSON(w, r, map[string]string{"id": id})
-    })
+    r.Post("/campaigns", handler.CampaignsPost)
+    r.Get("/campaigns", handler.CampaignsGet)
 
     http.ListenAndServe(":3000", r)
 }
