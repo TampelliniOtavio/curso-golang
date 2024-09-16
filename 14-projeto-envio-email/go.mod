@@ -4,6 +4,7 @@ go 1.23.0
 
 require (
 	github.com/go-chi/chi/v5 v5.1.0
+	github.com/go-chi/render v1.0.3
 	github.com/go-playground/validator/v10 v10.22.1
 	github.com/jaswdr/faker v1.19.1
 	github.com/rs/xid v1.6.0
@@ -11,6 +12,7 @@ require (
 )
 
 require (
+	github.com/ajg/form v1.5.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
