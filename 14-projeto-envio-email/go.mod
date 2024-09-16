@@ -3,6 +3,7 @@ module emailn
 go 1.23.0
 
 require (
+	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-playground/validator/v10 v10.22.1
 	github.com/jaswdr/faker v1.19.1
 	github.com/rs/xid v1.6.0
