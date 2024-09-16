@@ -1,22 +1,14 @@
 package main
 
 import (
+	"emailn/internal/contract"
+	"emailn/internal/domain/campaign"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
-
-type product struct{
-    ID int
-    Name string
-}
-
-type myHandler struct{}
-func (m myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    w.Write([]byte("MyHandler"))
-}
 
 func main() {
     r := chi.NewRouter()
@@ -26,43 +18,28 @@ func main() {
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
 
-    m := myHandler{}
-    r.Handle("/handler", m)
+    service := campaign.Service{}
 
-    r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-        name := r.URL.Query().Get("name")
-        id := r.URL.Query().Get("id")
-        if name != "" || id != "" {
-            w.Write([]byte(name + id))
+    r.Post("/campaigns", func(w http.ResponseWriter, r *http.Request) {
+        var request contract.NewCampaign
+        err := render.DecodeJSON(r.Body, &request)
+
+        if err != nil {
+            render.Status(r, 400)
+            render.JSON(w, r, map[string]string{"error": err.Error()})
             return
         }
 
-        w.Write([]byte("Teste"))
-    })
+        id, err := service.Create(request)
 
-    r.Get("/{productName}", func(w http.ResponseWriter, r *http.Request) {
-        param := chi.URLParam(r, "productName")
-        w.Write([]byte(param))
-    })
+        if err != nil {
+            render.Status(r, 400)
+            render.JSON(w, r, map[string]string{"error": err.Error()})
+            return
+        }
 
-    r.Get("/json", func(w http.ResponseWriter, r *http.Request) {
-        obj := map[string]string{"message": "success"}
-
-        render.JSON(w, r, obj)
-    })
-
-    r.Post("/product", func(w http.ResponseWriter, r *http.Request) {
-        var product product
-        render.DecodeJSON(r.Body, &product)
-        product.ID = 5
-        render.JSON(w, r, product)
-    })
-
-    r.Put("/product", func(w http.ResponseWriter, r *http.Request) {
-        var product product
-        render.DecodeJSON(r.Body, &product)
-        product.ID = 5
-        render.JSON(w, r, product)
+        render.Status(r, 201)
+        render.JSON(w, r, map[string]string{"id": id})
     })
 
     http.ListenAndServe(":3000", r)
