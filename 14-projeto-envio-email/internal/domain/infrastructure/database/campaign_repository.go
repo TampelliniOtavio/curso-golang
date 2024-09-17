@@ -13,10 +13,10 @@ func (c *CampaignRepository) Save(campaign *campaign.Campaign) error {
     return nil
 }
 
-func (c *CampaignRepository) Get() []campaign.Campaign {
+func (c *CampaignRepository) Get() ([]campaign.Campaign, error) {
     if c.campaigns == nil {
-        return []campaign.Campaign{}
+        return []campaign.Campaign{}, nil
     }
 
-    return c.campaigns
+    return c.campaigns, nil
 }

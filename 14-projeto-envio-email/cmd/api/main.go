@@ -26,8 +26,8 @@ func main() {
         CampaignService: campaignSservice,
     }
 
-    r.Post("/campaigns", handler.CampaignsPost)
-    r.Get("/campaigns", handler.CampaignsGet)
+    r.Post("/campaigns", endpoints.HandlerError(handler.CampaignsPost))
+    r.Get("/campaigns", endpoints.HandlerError(handler.CampaignsGet))
 
     http.ListenAndServe(":3000", r)
 }
