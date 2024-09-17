@@ -25,7 +25,7 @@ func (r *repositoryMock) Get() ([]Campaign, error) {
 }
 
 var (
-    service = Service{}
+    service = ServiceImp{}
 )
 
 func Test_Create_ValidateDomainError(t *testing.T) {

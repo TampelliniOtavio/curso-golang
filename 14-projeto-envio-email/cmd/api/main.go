@@ -18,12 +18,12 @@ func main() {
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
 
-    campaignSservice := campaign.Service{
+    campaignSservice := campaign.ServiceImp{
         Repository: &database.CampaignRepository{},
     }
 
     handler := endpoints.Handler{
-        CampaignService: campaignSservice,
+        CampaignService: &campaignSservice,
     }
 
     r.Post("/campaigns", endpoints.HandlerError(handler.CampaignsPost))
