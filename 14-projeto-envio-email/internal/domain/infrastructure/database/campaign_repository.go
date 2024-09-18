@@ -2,6 +2,7 @@ package database
 
 import (
 	"emailn/internal/domain/campaign"
+	"errors"
 )
  
 type CampaignRepository struct{
@@ -19,4 +20,14 @@ func (c *CampaignRepository) Get() ([]campaign.Campaign, error) {
     }
 
     return c.campaigns, nil
+}
+
+func (c *CampaignRepository) GetById(id string) (*campaign.Campaign, error) {
+    for _, v := range c.campaigns {
+        if v.Id == id {
+            return &v, nil
+        }
+    }
+
+    return nil, errors.New("Not Found")
 }
