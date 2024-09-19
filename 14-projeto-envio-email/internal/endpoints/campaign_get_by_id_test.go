@@ -3,7 +3,7 @@ package endpoints
 import (
 	"emailn/internal/contract"
 	"emailn/internal/domain/campaign"
-	internalMock "emailn/internal/test/mock"
+	"emailn/internal/test/internalmock"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -23,7 +23,7 @@ func Test_CampaignGetById_should_return_campaign(t *testing.T) {
         Content: "Content",
     }
 
-    service := &internalMock.CampaignServiceMock{}
+    service := &internalmock.CampaignServiceMock{}
     service.On("GetById", mock.Anything).Return(&body, nil)
     handler := Handler{CampaignService: service}
 
@@ -47,7 +47,7 @@ func Test_CampaignGetById_should_return_error(t *testing.T) {
 
     errExpected := errors.New("Something went Wrong")
 
-    service := &internalMock.CampaignServiceMock{}
+    service := &internalmock.CampaignServiceMock{}
     service.On("GetById", mock.Anything).Return(nil, errExpected)
     handler := Handler{CampaignService: service}
 

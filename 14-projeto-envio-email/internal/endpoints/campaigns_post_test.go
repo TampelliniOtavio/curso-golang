@@ -3,7 +3,7 @@ package endpoints
 import (
 	"bytes"
 	"emailn/internal/contract"
-	internalMock "emailn/internal/test/mock"
+	"emailn/internal/test/internalmock"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -22,7 +22,7 @@ func Test_CampaignsPost_should_save_new_campaign(t *testing.T) {
         Content: "Content",
         Emails: []string{"email@email.com"},
     }
-    service := &internalMock.CampaignServiceMock{}
+    service := &internalmock.CampaignServiceMock{}
     service.On("Create", mock.MatchedBy(func(request contract.NewCampaign) bool {
         if request.Name == body.Name && request.Content == body.Content {
             return true
@@ -55,7 +55,7 @@ func Test_CampaignsPost_should_inform_error_when_exist(t *testing.T) {
         Content: "Content",
         Emails: []string{"email@email.com"},
     }
-    service := &internalMock.CampaignServiceMock{}
+    service := &internalmock.CampaignServiceMock{}
     service.On("Create", mock.Anything).Return("", errors.New("error"))
     handler := Handler{
         CampaignService: service,
