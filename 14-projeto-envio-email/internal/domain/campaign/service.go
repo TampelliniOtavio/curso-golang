@@ -42,6 +42,7 @@ func (s *ServiceImp) GetById(id string) (*contract.CampaignResponse, error) {
         Id: campaign.Id,
         Status: campaign.Status,
         Content: campaign.Content,
+        AmountOfEmailsToSend: len(campaign.Contacts),
         Name: campaign.Name,
     }, nil
 }
