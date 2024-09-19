@@ -30,7 +30,7 @@ func (c *CampaignRepository) Get() (*[]campaign.Campaign, error) {
 func (c *CampaignRepository) GetById(id string) (*campaign.Campaign, error) {
     var campaign campaign.Campaign
 
-    tx := c.Db.First(&campaign, id)
+    tx := c.Db.First(&campaign, "id = ?", id)
 
     if tx.Error != nil {
         return nil, tx.Error
