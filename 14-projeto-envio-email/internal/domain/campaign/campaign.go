@@ -14,26 +14,31 @@ const (
 )
 
 type Contact struct {
-    Email string    `validate:"email"`
+    Id         string    `validate:"required" gorm:"size:50"`
+    Email      string    `validate:"email" gorm:"size:100"`
+    CampaignId string    `validate:"required" gorm:"size:50"`
 }
 
 type Campaign struct {
-    Id        string    `validate:"required"`
-    Name      string    `validate:"min=5,max=24"`
+    Id        string    `validate:"required" gorm:"size:50"`
+    Name      string    `validate:"min=5,max=24" gorm:"size:100"`
     CreatedOn time.Time `validate:"required"`
-    Status    string    `validate:"required"`
-    Content   string    `validate:"min=5,max=1024"`
+    Status    string    `validate:"required" gorm:"size:20"`
+    Content   string    `validate:"min=5,max=1024" gorm:"size:1024"`
     Contacts  []Contact `validate:"min=1,dive"`
 }
 
 func NewCampaign(name string, content string, emails []string) (*Campaign, error) {
+    campaignId := xid.New().String()
     contacts := make([]Contact, len(emails))
     for i, email := range emails {
         contacts[i].Email = email
+        contacts[i].Id = xid.New().String()
+        contacts[i].CampaignId = campaignId
     }
 
     campaign := &Campaign{
-        Id: xid.New().String(),
+        Id: campaignId,
         Name: name,
         Content: content,
         CreatedOn: time.Now(),
