@@ -3,10 +3,13 @@ package campaign
 import (
 	"emailn/internal/contract"
 	internalerrors "emailn/internal/internal-errors"
+	"encoding/json"
+	"errors"
 )
 type Service interface{
     Create(newCampaign contract.NewCampaign) (string, error)
     GetById(id string) (*contract.CampaignResponse, error)
+    Cancel(id string) error
 }
 
 type ServiceImp struct{
@@ -40,4 +43,30 @@ func (s *ServiceImp) GetById(id string) (*contract.CampaignResponse, error) {
         Content: campaign.Content,
         Name: campaign.Name,
     }, nil
+}
+
+func (s *ServiceImp) Cancel(id string) error {
+    campaign, err := s.GetById(id)
+
+    if err != nil {
+        return internalerrors.ErrInternal
+    }
+
+    if campaign.Status != Pending {
+        return errors.New("Campaign status Invalid")
+    }
+
+    var b Campaign
+    js, _ := json.Marshal(campaign)
+    json.Unmarshal(js, &b)
+    b.Cancel()
+
+    err = s.Repository.Save(&b)
+
+
+    if err != nil {
+        return internalerrors.ErrInternal
+    }
+
+    return nil
 }
