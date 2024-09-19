@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 )
+
 type Service interface{
     Create(newCampaign contract.NewCampaign) (string, error)
     GetById(id string) (*contract.CampaignResponse, error)
@@ -26,7 +27,7 @@ func (s *ServiceImp) Create(newCampaign contract.NewCampaign) (string, error) {
     err = s.Repository.Create(campaign)
 
     if err != nil {
-        return "", internalerrors.ErrInternal
+        return "", err
     }
 
     return campaign.Id, err
@@ -35,7 +36,7 @@ func (s *ServiceImp) Create(newCampaign contract.NewCampaign) (string, error) {
 func (s *ServiceImp) GetById(id string) (*contract.CampaignResponse, error) {
     campaign, err := s.Repository.GetById(id)
     if err != nil {
-        return nil, internalerrors.ErrInternal
+        return nil, err
     }
 
     return &contract.CampaignResponse{
@@ -51,7 +52,7 @@ func (s *ServiceImp) Cancel(id string) error {
     campaign, err := s.GetById(id)
 
     if err != nil {
-        return internalerrors.ErrInternal
+        return err
     }
 
     if campaign.Status != Pending {
@@ -67,7 +68,7 @@ func (s *ServiceImp) Cancel(id string) error {
 
 
     if err != nil {
-        return internalerrors.ErrInternal
+        return err
     }
 
     return nil
@@ -77,7 +78,7 @@ func (s *ServiceImp) Delete(id string) error {
     campaign, err := s.GetById(id)
 
     if err != nil {
-        return internalerrors.ErrInternal
+        return err
     }
 
     if campaign.Status != Pending {
@@ -93,7 +94,7 @@ func (s *ServiceImp) Delete(id string) error {
 
 
     if err != nil {
-        return internalerrors.ErrInternal
+        return err
     }
 
     return nil
