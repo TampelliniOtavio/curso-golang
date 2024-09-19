@@ -14,7 +14,12 @@ type repositoryMock struct{
     mock.Mock
 }
 
-func (r *repositoryMock) Save(campaign *Campaign) error {
+func (r *repositoryMock) Create(campaign *Campaign) error {
+    args := r.Called(campaign)
+    return args.Error(0)
+}
+
+func (r *repositoryMock) Update(campaign *Campaign) error {
     args := r.Called(campaign)
     return args.Error(0)
 }
@@ -33,6 +38,11 @@ func (r *repositoryMock) GetById(id string) (*Campaign, error) {
     }
 
     return args.Get(0).(*Campaign), nil
+}
+
+func (r *repositoryMock) Delete(campaign *Campaign) error {
+    args := r.Called(campaign)
+    return args.Error(0)
 }
 
 var (
@@ -62,7 +72,7 @@ func Test_Create_Campaign(t *testing.T) {
     }
 
     repository := new(repositoryMock)
-    repository.On("Save", mock.Anything).Return(nil)
+    repository.On("Create", mock.Anything).Return(nil)
 
     service.Repository = repository
 
@@ -81,7 +91,7 @@ func Test_Create_ValidateRepositorySave(t *testing.T) {
     }
 
     repository := new(repositoryMock)
-    repository.On("Save", mock.Anything).Return(internalerrors.ErrInternal)
+    repository.On("Create", mock.Anything).Return(internalerrors.ErrInternal)
     service.Repository = repository
 
     _, err := service.Create(newCampaign)

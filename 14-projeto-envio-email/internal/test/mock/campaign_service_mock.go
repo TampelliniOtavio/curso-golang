@@ -29,3 +29,8 @@ func (m *CampaignServiceMock) Cancel(id string) error {
     args := m.Called(id)
     return args.Error(0)
 }
+
+func (m *CampaignServiceMock) Delete(id string) error {
+    args := m.Called(id)
+    return args.Error(0)
+}

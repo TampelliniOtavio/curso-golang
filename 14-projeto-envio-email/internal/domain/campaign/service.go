@@ -10,6 +10,7 @@ type Service interface{
     Create(newCampaign contract.NewCampaign) (string, error)
     GetById(id string) (*contract.CampaignResponse, error)
     Cancel(id string) error
+    Delete(id string) error
 }
 
 type ServiceImp struct{
@@ -22,7 +23,7 @@ func (s *ServiceImp) Create(newCampaign contract.NewCampaign) (string, error) {
         return "", err
     }
 
-    err = s.Repository.Save(campaign)
+    err = s.Repository.Create(campaign)
 
     if err != nil {
         return "", internalerrors.ErrInternal
@@ -61,7 +62,33 @@ func (s *ServiceImp) Cancel(id string) error {
     json.Unmarshal(js, &b)
     b.Cancel()
 
-    err = s.Repository.Save(&b)
+    err = s.Repository.Update(&b)
+
+
+    if err != nil {
+        return internalerrors.ErrInternal
+    }
+
+    return nil
+}
+
+func (s *ServiceImp) Delete(id string) error {
+    campaign, err := s.GetById(id)
+
+    if err != nil {
+        return internalerrors.ErrInternal
+    }
+
+    if campaign.Status != Pending {
+        return errors.New("Campaign status Invalid")
+    }
+
+    var b Campaign
+    js, _ := json.Marshal(campaign)
+    json.Unmarshal(js, &b)
+    b.Delete()
+
+    err = s.Repository.Delete(&b)
 
 
     if err != nil {
