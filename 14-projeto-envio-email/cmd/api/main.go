@@ -2,8 +2,8 @@ package main
 
 import (
 	"emailn/internal/domain/campaign"
-	"emailn/internal/domain/infrastructure/database"
 	"emailn/internal/endpoints"
+	"emailn/internal/infrastructure/database"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -19,7 +19,9 @@ func main() {
     r.Use(middleware.Recoverer)
 
     campaignSservice := campaign.ServiceImp{
-        Repository: &database.CampaignRepository{},
+        Repository: &database.CampaignRepository{
+            Db: database.NewDB(),
+        },
     }
 
     handler := endpoints.Handler{
