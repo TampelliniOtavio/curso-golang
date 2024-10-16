@@ -17,6 +17,7 @@ func main() {
     r.Use(middleware.RealIP)
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
+    r.Use(endpoints.Auth)
 
     campaignSservice := campaign.ServiceImp{
         Repository: &database.CampaignRepository{
@@ -33,5 +34,6 @@ func main() {
     r.Get("/campaigns/{id}", endpoints.HandlerError(handler.CampaignGetById))
     r.Delete("/campaigns/{id}", endpoints.HandlerError(handler.CampaignDelete))
 
+    print("Server Starting...\n")
     http.ListenAndServe(":3000", r)
 }
