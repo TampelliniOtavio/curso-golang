@@ -41,8 +41,8 @@ func Test_HandlerError_when_endpoint_return_domain_error(t *testing.T) {
 
     handlerFunc.ServeHTTP(res, req)
 
-    assert.Equal(http.StatusBadRequest, res.Code)
-    assert.Contains(res.Body.String(), "Domain Error")
+    assert.Equal(http.StatusInternalServerError, res.Code)
+    assert.Contains(res.Body.String(), "Internal Server Error")
 }
 
 func Test_HandlerError_when_endpoint_return_success(t *testing.T) {

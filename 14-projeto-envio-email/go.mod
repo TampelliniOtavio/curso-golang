@@ -4,6 +4,7 @@ go 1.23.0
 
 require (
 	github.com/coreos/go-oidc/v3 v3.11.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/render v1.0.3
 	github.com/go-playground/validator/v10 v10.22.1
