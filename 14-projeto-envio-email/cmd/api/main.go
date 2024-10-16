@@ -17,7 +17,6 @@ func main() {
     r.Use(middleware.RealIP)
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
-    r.Use(endpoints.Auth)
 
     campaignSservice := campaign.ServiceImp{
         Repository: &database.CampaignRepository{
@@ -29,10 +28,14 @@ func main() {
         CampaignService: &campaignSservice,
     }
 
-    r.Post("/campaigns", endpoints.HandlerError(handler.CampaignsPost))
-    r.Get("/campaigns", endpoints.HandlerError(handler.CampaignsGet))
-    r.Get("/campaigns/{id}", endpoints.HandlerError(handler.CampaignGetById))
-    r.Delete("/campaigns/{id}", endpoints.HandlerError(handler.CampaignDelete))
+    r.Route("/campaigns", func (r chi.Router) {
+        r.Use(endpoints.Auth)
+        r.Post("/", endpoints.HandlerError(handler.CampaignsPost))
+        r.Get("/", endpoints.HandlerError(handler.CampaignsGet))
+        r.Get("/{id}", endpoints.HandlerError(handler.CampaignGetById))
+        r.Delete("/{id}", endpoints.HandlerError(handler.CampaignDelete))
+    })
+
 
     print("Server Starting...\n")
     http.ListenAndServe(":3000", r)
