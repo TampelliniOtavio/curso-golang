@@ -4,6 +4,7 @@ import (
 	"emailn/internal/domain/campaign"
 	"emailn/internal/endpoints"
 	"emailn/internal/infrastructure/database"
+	"emailn/internal/infrastructure/mail"
 	"log"
 	"net/http"
 
@@ -30,6 +31,7 @@ func main() {
         Repository: &database.CampaignRepository{
             Db: database.NewDB(),
         },
+        SendMail: mail.SendMail,
     }
 
     handler := endpoints.Handler{
@@ -42,6 +44,7 @@ func main() {
         r.Get("/", endpoints.HandlerError(handler.CampaignsGet))
         r.Get("/{id}", endpoints.HandlerError(handler.CampaignGetById))
         r.Delete("/{id}", endpoints.HandlerError(handler.CampaignDelete))
+        r.Patch("/start/{id}", endpoints.HandlerError(handler.CampaignStart))
     })
 
 
