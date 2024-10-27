@@ -3,10 +3,7 @@ package endpoints
 import (
 	"emailn/internal/contract"
 	"emailn/internal/domain/campaign"
-	"emailn/internal/test/internalmock"
 	"errors"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,6 +11,7 @@ import (
 )
 
 func Test_CampaignGetById_should_return_campaign(t *testing.T) {
+    setup()
     assert := assert.New(t)
 
     body := contract.CampaignResponse{
@@ -23,12 +21,9 @@ func Test_CampaignGetById_should_return_campaign(t *testing.T) {
         Content: "Content",
     }
 
-    service := &internalmock.CampaignServiceMock{}
     service.On("GetById", mock.Anything).Return(&body, nil)
-    handler := Handler{CampaignService: service}
 
-    req, _ := http.NewRequest("GET", "/campaigns/" + body.Id, nil)
-    rr := httptest.NewRecorder()
+    req, rr := newReqAndRecord("GET", "/", nil)
 
     response, status, err := handler.CampaignGetById(rr, req)
 
@@ -43,16 +38,14 @@ func Test_CampaignGetById_should_return_campaign(t *testing.T) {
 }
 
 func Test_CampaignGetById_should_return_error(t *testing.T) {
+    setup()
     assert := assert.New(t)
 
     errExpected := errors.New("Something went Wrong")
 
-    service := &internalmock.CampaignServiceMock{}
     service.On("GetById", mock.Anything).Return(nil, errExpected)
-    handler := Handler{CampaignService: service}
 
-    req, _ := http.NewRequest("GET", "/", nil)
-    rr := httptest.NewRecorder()
+    req, rr := newReqAndRecord("GET", "/", nil)
 
     _, status, err := handler.CampaignGetById(rr, req)
 
