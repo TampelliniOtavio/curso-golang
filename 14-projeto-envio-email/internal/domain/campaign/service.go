@@ -58,15 +58,25 @@ func (s *ServiceImp) GetById(id string) (*contract.CampaignResponse, error) {
     }, nil
 }
 
-func (s *ServiceImp) Delete(id string) error {
-    campaign, err := s.GetById(id)
+func (s *ServiceImp) getAndValidateStatusIsPending(id string) (*Campaign, error) {
+    campaign, err := s.Repository.GetById(id)
 
     if err != nil {
-        return err
+        return nil, err
     }
 
     if campaign.Status != Pending {
-        return errors.New("Campaign status Invalid")
+        return nil, errors.New("Campaign status Invalid")
+    }
+
+    return campaign, nil
+}
+
+func (s *ServiceImp) Delete(id string) error {
+    campaign, err := s.getAndValidateStatusIsPending(id)
+
+    if err != nil {
+        return err
     }
 
     var b Campaign
@@ -88,14 +98,10 @@ func (s *ServiceImp) Delete(id string) error {
 }
 
 func (s *ServiceImp) Start(id string) error {
-    campaignSaved, err := s.Repository.GetById(id)
+    campaignSaved, err := s.getAndValidateStatusIsPending(id)
 
     if err != nil {
         return err
-    }
-
-    if campaignSaved.Status != Pending {
-        return errors.New("Campaign status Invalid")
     }
 
     err = s.SendMail(campaignSaved)
