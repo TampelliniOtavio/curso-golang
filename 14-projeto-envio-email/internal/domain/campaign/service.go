@@ -1,7 +1,6 @@
 package campaign
 
 import (
-	"emailn/internal/contract"
 	internalerrors "emailn/internal/internal-errors"
 	"encoding/json"
 	"errors"
@@ -10,8 +9,8 @@ import (
 )
 
 type Service interface {
-	Create(newCampaign contract.NewCampaign) (string, error)
-	GetById(id string) (*contract.CampaignResponse, error)
+	Create(newCampaign NewCampaignRequest) (string, error)
+	GetById(id string) (*CampaignResponse, error)
 	Delete(id string) error
 	Start(id string) error
 }
@@ -21,7 +20,7 @@ type ServiceImp struct {
 	SendMail   func(Campaign *Campaign) error
 }
 
-func (s *ServiceImp) Create(newCampaign contract.NewCampaign) (string, error) {
+func (s *ServiceImp) Create(newCampaign NewCampaignRequest) (string, error) {
 	campaign, err := NewCampaign(newCampaign.Name, newCampaign.Content, newCampaign.Emails, newCampaign.CreatedBy)
 
 	if err != nil {
@@ -40,7 +39,7 @@ func (s *ServiceImp) Create(newCampaign contract.NewCampaign) (string, error) {
 	return campaign.Id, err
 }
 
-func (s *ServiceImp) GetById(id string) (*contract.CampaignResponse, error) {
+func (s *ServiceImp) GetById(id string) (*CampaignResponse, error) {
 	campaign, err := s.Repository.GetById(id)
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -49,7 +48,7 @@ func (s *ServiceImp) GetById(id string) (*contract.CampaignResponse, error) {
 		return nil, err
 	}
 
-	return &contract.CampaignResponse{
+	return &CampaignResponse{
 		Id:                   campaign.Id,
 		Status:               campaign.Status,
 		Content:              campaign.Content,

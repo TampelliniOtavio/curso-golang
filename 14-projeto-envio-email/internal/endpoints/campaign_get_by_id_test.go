@@ -1,7 +1,6 @@
 package endpoints
 
 import (
-	"emailn/internal/contract"
 	"emailn/internal/domain/campaign"
 	"errors"
 	"testing"
@@ -14,7 +13,7 @@ func Test_CampaignGetById_should_return_campaign(t *testing.T) {
     setup()
     assert := assert.New(t)
 
-    body := contract.CampaignResponse{
+    body := campaign.CampaignResponse{
         Id: "ID",
         Name: "Name",
         Status: campaign.Pending,
@@ -27,7 +26,7 @@ func Test_CampaignGetById_should_return_campaign(t *testing.T) {
 
     response, status, err := handler.CampaignGetById(rr, req)
 
-    campaign := response.(*contract.CampaignResponse)
+    campaign := response.(*campaign.CampaignResponse)
 
     assert.Nil(err)
     assert.Equal(status, 200)
