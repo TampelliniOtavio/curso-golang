@@ -101,9 +101,9 @@ func (s *ServiceImp) SendEmailAndUpdateStatus(campaignSaved *Campaign) {
 	err := s.SendMail(campaignSaved)
 	if err != nil {
 		campaignSaved.Fail()
+	} else {
+		campaignSaved.Done()
 	}
-
-	campaignSaved.Done()
 
 	s.Repository.Update(campaignSaved)
 }
@@ -114,8 +114,6 @@ func (s *ServiceImp) Start(id string) error {
 	if err != nil {
 		return err
 	}
-
-	go s.SendEmailAndUpdateStatus(campaignSaved)
 
 	campaignSaved.Started()
 	err = s.Repository.Update(campaignSaved)

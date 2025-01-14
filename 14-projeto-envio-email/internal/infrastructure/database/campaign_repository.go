@@ -56,7 +56,7 @@ func (c *CampaignRepository) GetCampaignsToBeSent() ([]campaign.Campaign, error)
 		&campaigns,
 		"status = ? and date_part('minute', now()::timestamp - updated_on::timestamp) >= ?", // diferença em minutos
 		campaign.Started,
-		10,
+		1,
 	)
 	return campaigns, tx.Error
 }
