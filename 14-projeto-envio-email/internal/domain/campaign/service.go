@@ -97,6 +97,16 @@ func (s *ServiceImp) Delete(id string) error {
 	return nil
 }
 
+func (s *ServiceImp) SendEmailAndUpdateStatus(campaignSaved *Campaign) {
+	err := s.SendMail(campaignSaved)
+	if err != nil {
+		campaignSaved.Fail()
+	}
+
+	campaignSaved.Done()
+
+	s.Repository.Update(campaignSaved)
+}
 
 func (s *ServiceImp) Start(id string) error {
 	campaignSaved, err := s.getAndValidateStatusIsPending(id)
@@ -105,17 +115,7 @@ func (s *ServiceImp) Start(id string) error {
 		return err
 	}
 
-	go func() {
-		err := s.SendMail(campaignSaved)
-		if err != nil {
-			campaignSaved.Fail()
-			return
-		}
-
-		campaignSaved.Done()
-
-		s.Repository.Update(campaignSaved)
-	}()
+	go s.SendEmailAndUpdateStatus(campaignSaved)
 
 	campaignSaved.Started()
 	err = s.Repository.Update(campaignSaved)
