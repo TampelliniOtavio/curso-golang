@@ -2,46 +2,35 @@ package endpoints
 
 import (
 	"context"
+	"emailn/internal/infrastructure/credentials"
 	"net/http"
-	"os"
-	"strings"
 
-	oidc "github.com/coreos/go-oidc/v3/oidc"
-	jwtgo "github.com/dgrijalva/jwt-go"
 	"github.com/go-chi/render"
 )
 
+type ValidateTokenFunc func(token string, ctx context.Context) (string, error)
+
+var ValidateToken ValidateTokenFunc = credentials.ValidateToken
+
 func Auth(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        tokenStr := r.Header.Get("Authorization")
-        if tokenStr == "" {
-            render.Status(r, 401)
-            render.JSON(w, r, map[string]string{"error": "Not Authorized"})
-            return
-        }
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		tokenStr := r.Header.Get("Authorization")
+		if tokenStr == "" {
+			render.Status(r, 401)
+			render.JSON(w, r, map[string]string{"error": "Not Authorized"})
+			return
+		}
 
-        tokenStr = strings.Replace(tokenStr, "Bearer ", "", 1)
-        provider, err := oidc.NewProvider(r.Context(), os.Getenv("KEYCLOAK_URL"))
-        if err != nil {
-            render.Status(r, 500)
-            render.JSON(w, r, map[string]string{"error": "error to connect to provider"})
-        }
+		email, err := ValidateToken(tokenStr, r.Context())
 
-        verifier := provider.Verifier(&oidc.Config{ClientID: "emailn"})
-        _, err = verifier.Verify(r.Context(), tokenStr)
+		if err != nil {
+			render.Status(r, 401)
+			render.JSON(w, r, map[string]string{"error": "Not Authorized"})
+			return
+		}
 
-        if err != nil {
-            render.Status(r, 401)
-            render.JSON(w, r, map[string]string{"error": "Not Authorized"})
-            return
-        }
+		ctx := context.WithValue(r.Context(), "email", email)
 
-        token, _ := jwtgo.Parse(tokenStr, nil)
-        claims := token.Claims.(jwtgo.MapClaims)
-        email := claims["email"]
-
-        ctx := context.WithValue(r.Context(), "email", email)
-
-        next.ServeHTTP(w, r.WithContext(ctx))
-    })
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
